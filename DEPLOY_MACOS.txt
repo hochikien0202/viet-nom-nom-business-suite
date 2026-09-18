@@ -1,0 +1,21 @@
+VIET NOM NOM V1.2 — MACOS LOCAL RUN
+
+1. Open Terminal in this project folder.
+2. Run:
+
+npm install
+npm run migrate
+npm start
+
+3. Open:
+http://localhost:3000
+
+Staff Admin:
+http://localhost:3000/admin.html
+
+Manager:
+http://localhost:3000/manager.html
+
+Default admin PIN: 2468
+
+No Supabase/PostgreSQL setup is required for local development. Local data is stored in .local-data/.

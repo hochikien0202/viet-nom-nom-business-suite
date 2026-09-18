@@ -1,0 +1,52 @@
+{
+  "businessName": "Viet Nom Nom",
+  "phone": "(519) 916-0879",
+  "address": "6645 Tecumseh Rd E, Windsor, ON N8T 1E7",
+  "email": "",
+  "onlineOrderingEnabled": true,
+  "deliveryEnabled": false,
+  "storeOverride": "auto",
+  "notice": "Vietnamese cuisine only.",
+  "hours": {
+    "monday": {
+      "open": "08:00",
+      "close": "19:00",
+      "closed": false
+    },
+    "tuesday": {
+      "open": "08:00",
+      "close": "19:00",
+      "closed": false
+    },
+    "wednesday": {
+      "open": "08:00",
+      "close": "19:00",
+      "closed": false
+    },
+    "thursday": {
+      "open": "08:00",
+      "close": "19:00",
+      "closed": false
+    },
+    "friday": {
+      "open": "08:00",
+      "close": "19:00",
+      "closed": false
+    },
+    "saturday": {
+      "open": "08:00",
+      "close": "19:00",
+      "closed": false
+    },
+    "sunday": {
+      "open": "08:00",
+      "close": "18:00",
+      "closed": false
+    }
+  },
+  "timezone": "America/Toronto",
+  "notificationEmailEnabled": false,
+  "notificationSmsEnabled": false,
+  "feedbackPhone": "(519) 916-0879",
+  "inventoryOwnerPhone": ""
+}

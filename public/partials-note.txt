@@ -1,0 +1,1 @@
+Shared header/footer are duplicated in each HTML file so the project works immediately by simply opening index.html or using VS Code Live Server. If you later move to React/Next.js, convert these repeated sections into components.

@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#d7192d">
+  <title>Checkout & Live Order Tracking | Viet Nom Nom</title>
+  <link rel="stylesheet" href="styles.css?v=1.0.0">
+</head>
+<body class="customer-checkout-page">
+  <header class="tracking-topbar">
+    <a class="tracking-brand tracking-brand-logo vnn-brand tracking-vnn-brand" href="index.html" aria-label="Viet Nom Nom home"><span class="vnn-logo-main">VIET NOM NOM</span><span class="vnn-logo-sub">VIETNAMESE KITCHEN</span></a>
+    <a class="tracking-menu-link" href="order.html">Menu</a>
+  </header>
+
+  <main class="tracking-shell">
+    <section id="checkoutLoading" class="tracking-card tracking-loading">
+      <div class="tracking-spinner"></div>
+      <b>Loading your order…</b>
+    </section>
+
+    <section id="draftCheckout" class="tracking-page-section" hidden>
+      <div class="tracking-page-head compact-review-head">
+        <div>
+          <span class="tracking-eyebrow">Final review</span>
+          <h1>Review your order.</h1>
+          <p>Review your order, choose your packing preference, then send it to Viet Nom Nom’s kitchen.</p>
+        </div>
+      </div>
+
+      <div class="review-simple-stack">
+        <section class="tracking-card review-simple-card">
+          <div class="tracking-section-head"><div><span>1 · Order summary</span><h2>Your food</h2></div><a href="order.html" class="tracking-text-link">Edit</a></div>
+          <div id="draftItems" class="tracking-items"></div>
+          <div id="draftRequestsCard" class="inline-request-summary" hidden>
+            <div class="inline-request-title">Kitchen requests</div>
+            <div id="draftRequests"></div>
+          </div>
+        </section>
+
+        <section class="tracking-card review-simple-card">
+          <div class="tracking-section-head"><div><span>2 · Service & payment</span><h2>How you’ll receive it</h2></div></div>
+          <div id="draftCustomerMeta" class="tracking-info-grid compact-info-grid"></div>
+
+          <fieldset id="checkoutPackingV1136" class="checkout-packing-v1136">
+            <legend>Utensils & napkins <small>Required · choose one for this order</small></legend>
+            <div class="checkout-packing-grid-v1136">
+              <label><input type="radio" name="checkoutPackingPreference" value="None"><span>No utensils or napkins</span></label>
+              <label><input type="radio" name="checkoutPackingPreference" value="Utensils"><span>Utensils only</span></label>
+              <label><input type="radio" name="checkoutPackingPreference" value="Napkins"><span>Napkins only</span></label>
+              <label><input type="radio" name="checkoutPackingPreference" value="Both"><span>Utensils & napkins</span></label>
+            </div>
+            <div id="checkoutPackingErrorV1136" class="checkout-packing-error-v1136" hidden>Please choose one option before sending your order.</div>
+          </fieldset>
+
+          <div id="draftPaymentInstructions" class="tracking-payment-instructions compact-payment-instructions"></div>
+        </section>
+
+        <section class="tracking-card tracking-payment-card review-simple-card review-amount-card">
+          <div class="tracking-section-head"><div><span>3 · Payment</span><h2>Amount due</h2></div></div>
+          <div id="draftTotals" class="tracking-totals"></div>
+          <button id="confirmOrderBtn" class="tracking-btn primary confirm-main" type="button">Confirm & Send Order</button>
+          <a href="order.html" class="tracking-edit-link">← Edit order / add more items</a>
+          <p class="tracking-action-note">Your order is sent only after you confirm.</p>
+        </section>
+      </div>
+    </section>
+
+    <section id="liveTracking" class="tracking-page-section" hidden>
+      <div class="tracking-page-head live compact-live-head">
+        <div>
+          <span class="tracking-eyebrow">Your order</span>
+          <h1 id="liveOrderNumber">Your order</h1>
+          <p id="liveHeadline">We’re keeping this page updated automatically.</p>
+        </div>
+        <span id="liveStatusPill" class="tracking-status-pill">Received</span>
+      </div>
+
+      <section id="preorderBanner" class="preorder-banner" hidden></section>
+
+      <div class="review-simple-stack live-simple-stack">
+        <section class="tracking-card review-simple-card">
+          <div class="tracking-section-head"><div><span>Order summary</span><h2>Your food</h2></div></div>
+          <div id="liveItems" class="tracking-items"></div>
+          <div id="liveRequestsCard" class="inline-request-summary" hidden>
+            <div class="inline-request-title">Kitchen requests</div>
+            <div id="liveRequests"></div>
+          </div>
+        </section>
+
+        <section class="tracking-card review-simple-card">
+          <div class="tracking-section-head"><div><span>Service & payment</span><h2>Order details</h2></div></div>
+          <div id="liveCustomerMeta" class="tracking-info-grid compact-info-grid"></div>
+          <div id="livePaymentInstructions" class="tracking-payment-instructions compact-payment-instructions"></div>
+        </section>
+
+        <section class="tracking-card tracking-payment-card review-simple-card">
+          <div class="tracking-section-head"><div><span>Payment</span><h2>Amount due</h2></div></div>
+          <div id="liveTotals" class="tracking-totals"></div>
+        </section>
+
+        <section class="tracking-card status-card simple-live-progress">
+          <div class="tracking-section-head"><div><span>Live order tracker</span><h2>Live progress</h2></div><div class="tracking-live-indicator"><i></i><span>Live</span></div></div>
+          <div id="statusTimeline" class="status-timeline"></div>
+          <div class="tracking-refresh-line"><span id="lastUpdated">Checking now…</span><button id="manualRefresh" type="button">Refresh</button></div>
+          <div id="readyAlertFallback" class="tracking-alert-control compact-alert-control" hidden>
+            <button id="enableReadyAlert" type="button">🔔 Enable READY sound</button>
+            <small id="readyAlertSupportText">If your browser blocks automatic sound, tap once to enable the READY chime.</small>
+          </div>
+        </section>
+
+      <div id="readyCelebration" class="ready-celebration" hidden>
+        <div class="ready-icon">🎉</div>
+        <div>
+          <span>READY NOW</span>
+          <h2 id="readyTitle">Your food is ready!</h2>
+          <p id="readyMessage">Come grab it while it’s hot and delicious!</p>
+        </div>
+        <button id="ackReadySound" type="button">Got it · stop sound · I'm Coming</button>
+      </div>
+      </div>
+    </section>
+
+    <section id="trackingRecovery" class="tracking-card tracking-recovery" hidden>
+      <span class="tracking-eyebrow">Find your order</span>
+      <h1>Open your live tracker.</h1>
+      <p>Enter the phone number used when the order was placed.</p>
+      <label>Phone number<input id="recoveryPhone" inputmode="tel" autocomplete="tel" placeholder="519-555-0000"></label>
+      <button id="recoveryBtn" class="tracking-btn primary" type="button">Open order</button>
+      <div id="recoveryMsg" class="tracking-error"></div>
+    </section>
+  </main>
+
+<footer class="site-footer vnn-footer"><div class="container vnn-footer-grid"><div><a class="brand vnn-brand footer-brand" href="index.html"><span class="vnn-logo-main">VIET NOM NOM</span><span class="vnn-logo-sub">VIETNAMESE KITCHEN</span></a><p>Vietnamese cuisine only — phở, bánh mì, vermicelli, rice plates, summer rolls and desserts.</p></div><div><strong>Visit</strong><p>6645 Tecumseh Rd E<br>Windsor, ON N8T 1E7<br><a href="tel:+15199160879">(519) 916-0879</a></p></div><div><strong>Hours</strong><p>Mon–Sat: 8:00 AM–7:00 PM<br>Sunday: 8:00 AM–6:00 PM</p></div></div><div class="container footer-bottom footer-bottom-showcase">© 2026 Viet Nom Nom. All rights reserved.</div></footer>
+
+  <audio id="customerReadyAudio" preload="auto" loop src="assets/sounds/order-alert.mp3?v=1.0.0"></audio>
+  <script src="checkout.js?v=1.0.0"></script>
+</body>
+</html>

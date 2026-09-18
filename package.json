@@ -1,0 +1,21 @@
+{
+  "name": "viet-nom-nom-business-suite",
+  "version": "1.4.0",
+  "private": true,
+  "description": "Viet Nom Nom Vietnamese-only restaurant website with local JSON development storage and optional PostgreSQL/Supabase production storage.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "migrate": "node migrate-data.js",
+    "check": "node --check server.js && node --check db.js && node --check pricing.js && node --check migrate-data.js && node --check public/app.js && node --check public/checkout.js && node --check public/admin.js && node --check public/admin-vi.js && node --check public/manager.js && node --check smoke-test.js",
+    "smoke": "node smoke-test.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "pg": "^8.16.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

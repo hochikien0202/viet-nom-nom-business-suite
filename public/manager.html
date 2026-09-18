@@ -1,0 +1,81 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Viet Nom Nom | Business Manager</title><link rel="stylesheet" href="manager.css?v=1.0.0"></head><body>
+<div id="login" class="login"><div class="login-card"><div class="brand manager-login-brand"><div class="vnn-manager-wordmark"><b>VIET NOM NOM</b><span>VIETNAMESE KITCHEN</span></div></div><h1>Business Manager</h1><p>Sales • CRM • Menu • Promotions • Inventory • Staff</p><input id="pin" type="password" placeholder="Manager PIN"><button onclick="login()">Open Dashboard</button><small>Default test PIN: 2468</small><div id="loginMsg"></div></div></div>
+<div id="app" class="app hidden"><aside><div class="logo manager-side-logo"><div class="vnn-manager-wordmark"><b>VIET NOM NOM</b><span>VIETNAMESE KITCHEN</span></div><small>BUSINESS MANAGER</small></div><nav>
+<button data-page="dashboard" class="active">▦ Dashboard</button><button data-page="store">◐ Website / Store</button><button data-page="pos">＋ New Sale / POS</button><button data-page="sales">$ Sales History</button><button data-page="revenue">▥ Revenue / Cash</button><button data-page="menu">☰ Menu</button><button data-page="promos">★ Promotions</button><button data-page="inventory">▤ Inventory</button><button data-page="recipes">♨ Recipes</button><button data-page="staff">♟ Staff / CRM</button><button data-page="payroll">$ Payroll</button><button data-page="orders">◉ Online Orders</button></nav><div class="aside-foot"><a href="/" target="_blank">Open customer website ↗</a><a href="/admin.html" target="_blank">Order receiver ↗</a><button onclick="logout()">Lock Manager</button></div></aside>
+<main><div id="appStatus" style="padding:0 20px;color:#a33;font-weight:700"></div><header><div><h1 id="pageTitle">Dashboard</h1><p id="pageSub">Viet Nom Nom operations overview</p></div><div class="today" id="today"></div></header>
+<section id="dashboard" class="page active"><div class="metrics" id="metrics"></div><div class="grid2"><div class="panel"><h2>Top Sellers</h2><div id="topItems"></div></div><div class="panel"><h2>Quick Actions</h2><div class="quick"><button onclick="go('pos')">＋ Enter a Sale</button><button onclick="go('menu')">Edit Menu</button><button onclick="go('promos')">Add Promotion</button><button onclick="go('inventory')">Update Stock</button></div></div></div></section>
+<section id="store" class="page"><div class="grid2"><div class="panel"><h2>Website & Ordering Control</h2><p id="managerStoreStatus" class="muted"></p><div class="formrow"><label>Store override<select id="managerStoreOverride"><option value="auto">Auto by hours</option><option value="open">Force Open</option><option value="closed">Force Closed</option></select></label><label>Online ordering<select id="managerOnlineOrdering"><option value="true">Enabled</option><option value="false">Disabled</option></select></label><label>Delivery availability<select id="managerDeliveryEnabled"><option value="true">ON · Accept delivery orders</option><option value="false">OFF · Pickup / Dine-in only</option></select></label></div><label>Website notice<input id="managerNotice" placeholder="Announcement shown on website"></label><div id="managerHours"></div><button class="primary big" onclick="saveManagerStore()">Save & Sync Website</button></div><div class="panel"><h2>How synchronization works</h2><p>Manager and Staff Admin use the same live data. Menu, prices, sold-out status, opening hours and orders are reflected on the customer website automatically.</p><div class="quick"><a class="primary" href="/" target="_blank">Open Website ↗</a><a class="primary" href="/admin.html" target="_blank">Open Staff Admin ↗</a></div></div></div></section>
+<section id="pos" class="page"><div class="pos-grid"><div class="panel"><div class="toolbar"><h2>Add items sold</h2><select id="posCategory" onchange="renderPOSMenu()"></select></div><input id="posSearch" placeholder="Search menu..." oninput="renderPOSMenu()"><div id="posMenu" class="menu-grid"></div></div><div class="panel receipt"><h2>Current Sale</h2><div id="cart"></div><div class="formrow"><label>Promotion<select id="salePromo" onchange="renderCart()"></select></label><label>Manual discount ($)<input id="manualDiscount" type="number" min="0" step="0.01" value="0" oninput="renderCart()"></label></div><div class="formrow"><label>Payment<select id="salePayment"><option>Cash</option><option>Debit</option><option>Credit</option><option>E-transfer</option></select></label><label>Order type<select id="saleChannel" onchange="renderPOSFilters()"><option>Walk-in</option><option>Dine-in</option><option>Pickup</option><option>Delivery</option><option>Phone</option></select></label></div><label>Customer name (optional)<input id="customerName"></label><label>Notes<textarea id="saleNotes" rows="2"></textarea></label><div id="totals" class="totals"></div><button class="primary big" onclick="completeSale()">Complete Sale</button><div id="saleMsg"></div></div></div></section>
+<section id="sales" class="page"><div id="dailySalesSummary" class="summary-grid"></div><div class="panel"><div class="toolbar"><div><h2>Sales History</h2><p class="muted">Daily totals, tax, discounts and payment mix are summarized above.</p></div><button class="ui-btn" onclick="loadAll()">Refresh</button></div><div class="tablewrap"><table><thead><tr><th>Sale</th><th>Date</th><th>Items</th><th>Promo/Discount</th><th>Payment</th><th>Total</th></tr></thead><tbody id="salesTable"></tbody></table></div></div></section>
+<section id="revenue" class="page">
+  <div class="revenue-v1140-head">
+    <div>
+      <span class="eyebrow">PRIVATE MANAGER LEDGER</span>
+      <h2>Daily Revenue & Cash Close</h2>
+      <p class="muted">Enter the debit terminal total, physical cash in the till, tips and cash taken out. The system calculates revenue and the next opening cash automatically.</p>
+    </div>
+    <button class="primary" onclick="newRevenueEntryV1140()">＋ New Daily Close</button>
+  </div>
+
+  <div id="revenueSummaryV1140" class="summary-grid revenue-summary-v1140"></div>
+
+  <div class="panel revenue-chart-panel-v1140">
+    <div class="toolbar">
+      <div><h2>Revenue Trend</h2><p class="muted">Imported notebook history plus every new daily close you save here.</p></div>
+      <select id="revenueRangeV1140" onchange="renderRevenueLedgerV1140()"><option value="all">All recorded days</option><option value="14">Last 14 entries</option><option value="7">Last 7 entries</option></select>
+    </div>
+    <div id="revenueChartV1140" class="revenue-chart-v1140"></div>
+  </div>
+
+  <div class="grid2 revenue-workspace-v1140">
+    <div class="panel">
+      <div class="toolbar"><div><h2>Enter Daily Close</h2><p class="muted">Debit total should be the terminal total including debit tips. Cash is the physical total currently in the till before paying debit tips or giving cash to the owner.</p></div></div>
+      <div id="revenueFormV1140" class="revenue-form-v1140"></div>
+    </div>
+    <div class="panel revenue-formula-panel-v1140">
+      <h2>Automatic Cash Formula</h2>
+      <div id="revenueFormulaV1140"></div>
+      <div class="revenue-rule-v1140"><b>Next begin cash</b><span>Cash in till − Debit tips paid from till − Cash given to owner − Other cash out</span></div>
+      <div class="revenue-rule-v1140"><b>Daily revenue</b><span>Debit terminal − Debit tips + Cash in till − Begin cash − Other cash out</span></div>
+      <div class="revenue-rule-v1140"><b>Total tips</b><span>Debit tips + Cash tips from the separate tip jar</span></div>
+      <p class="muted revenue-note-v1140">Historical rows imported from your notebook keep the handwritten total as the recorded revenue when one was written. You can edit any imported day if you want to correct it.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="toolbar"><div><h2>Daily Revenue History</h2><p class="muted">Newest day first. Green/red change compares each completed day with the previous completed day.</p></div><button onclick="loadAll()">Refresh</button></div>
+    <div class="tablewrap"><table class="revenue-table-v1140"><thead><tr><th>Date</th><th>Revenue</th><th>Debit</th><th>Cash in till</th><th>Tips</th><th>Begin cash</th><th>Cash out</th><th>Next begin</th><th>Trend</th><th></th></tr></thead><tbody id="revenueTableV1140"></tbody></table></div>
+  </div>
+</section>
+<section id="menu" class="page"><div class="panel"><div class="toolbar"><div><h2>Menu Management</h2><p class="muted">Edit pricing, cost, website visibility and stock status. Changes sync to Staff Admin and the customer website.</p></div><button class="primary" onclick="showMenuForm()">＋ Add Item</button></div><div id="menuForm" class="inline-form hidden"></div><div id="menuTable" class="manager-menu-grid"></div></div></section>
+<section id="promos" class="page"><div class="panel"><div class="toolbar"><h2>Promotions</h2><button class="primary" onclick="showPromoForm()">＋ Add Promotion</button></div><div id="promoForm" class="inline-form hidden"></div><div class="cards" id="promoCards"></div></div></section>
+<section id="inventory" class="page">
+<div class="panel inventory-workspace">
+  <div class="toolbar">
+    <div>
+      <h2>Stock Check by Section</h2>
+      <p class="muted">Open one section at a time and enter only the real On hand count. The system automatically decides what needs ordering and how much to buy.</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button onclick="exportInventoryExcel()">📊 Export Excel</button>
+      <button onclick="sendReorderList()">📲 Send Today's Order List</button>
+      <button class="primary" onclick="showInventoryForm()">＋ Add Stock Item</button>
+    </div>
+  </div>
+  <div class="inventory-commandbar">
+    <label class="inventory-searchbox"><span>Search stock</span><input id="inventorySearch" type="search" placeholder="Search Coke, cilantro, packaging..." oninput="renderInventory()"></label>
+    <label class="inventory-section-jump"><span>Jump to section</span><select id="inventorySectionJump" onchange="inventoryJumpToSection(this.value)"><option value="">Choose a section…</option></select></label>
+    <div class="inventory-view-actions"><button type="button" onclick="inventoryToggleSections(true)">Open all</button><button type="button" onclick="inventoryToggleSections(false)">Close all</button></div>
+  </div>
+  <div id="inventorySendMsg" class="muted inventory-send-msg"></div>
+  <div id="inventoryForm" class="inline-form hidden"></div>
+  <div id="inventoryInsights" class="inventory-insights"></div>
+  <div id="inventorySections" class="inventory-sections"></div>
+</div>
+</section>
+
+<section id="recipes" class="page"><div class="panel"><div class="toolbar"><div><h2>Recipe Book</h2><p class="muted">Create, update and organize kitchen recipes, ingredients, preparation notes and batch yields.</p></div><button class="primary" onclick="showRecipeForm()">＋ Add Recipe</button></div><div id="recipeForm" class="inline-form hidden"></div><div id="recipeCards" class="recipe-grid"></div></div></section>
+<section id="staff" class="page"><div class="panel"><div class="toolbar"><div><h2>Employees / CRM</h2><p class="muted">Employee profile, emergency contact, employment and payroll defaults.</p></div><button class="primary" onclick="showStaffForm()">＋ Add Employee</button></div><div class="privacy-note"><b>Private employee data</b><span>SIN and personal information are restricted to Manager view. This local demo stores data on this computer; use encrypted production storage before real payroll use.</span></div><div id="staffForm" class="inline-form hidden"></div><div class="cards staff-profile-grid" id="staffCards"></div></div></section>
+<section id="payroll" class="page"><div class="panel payroll-calendar-panel"><div class="toolbar"><div><h2>Shift & Pay Calendar</h2><p class="muted">Assign morning/evening/custom shifts by date. Payroll totals are calculated from these shifts.</p></div><button class="primary" onclick="showShiftForm()">＋ Add Shift</button></div><div id="payrollStatusBoard" class="summary-grid"></div><div id="shiftForm" class="inline-form hidden"></div><div id="shiftLedger" class="shift-ledger"></div></div><div class="grid2 payroll-layout"><div class="panel"><div class="toolbar"><div><h2>Run Payroll</h2><p class="muted">Record hours, rate, pay period and how the employee was paid.</p></div></div><div id="payrollForm"></div></div><div class="panel"><div class="toolbar"><div><h2>Payroll History</h2><p class="muted">Recorded employee payments.</p></div><button onclick="loadAll()">Refresh</button></div><div class="tablewrap"><table><thead><tr><th>Payroll</th><th>Employee</th><th>Period</th><th>Hours</th><th>Method</th><th>Gross</th><th>Net</th><th></th></tr></thead><tbody id="payrollTable"></tbody></table></div></div></div></section>
+<section id="orders" class="page"><div class="panel"><div class="toolbar"><h2>Online Orders & Order History</h2><button onclick="loadAll()">Refresh</button></div><div id="orderCards" class="cards"></div></div></section>
+</main></div><script src="menu-variants.js?v=1.0.0"></script><script src="manager.js?v=1.0.0"></script></body></html>
