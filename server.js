@@ -113,6 +113,59 @@ function proteinVariantSurcharge(menuItem, requestedName) {
   if (/veggies|tofu/.test(name)) return 0;
   return 0;
 }
+const V160_HOT_READY_COMBOS = [
+  { id:'combo-rice-noodles-two', name:'C1. Rice/Noodles + 2 Hot Items', category:'Combo', price:12.99, description:'Choose 1 rice or noodle base and any 2 Hot & Ready items.', active:true, soldOut:false, cost:0, image:'' },
+  { id:'combo-single-item', name:'C2. Single Rice or Noodles', category:'Combo', price:5.99, description:'Choose one serving of fried rice or chow mein.', active:true, soldOut:false, cost:0, image:'' },
+  { id:'combo-single-hot-item', name:'C3. Single Hot Item', category:'Combo', price:7.99, description:'Choose one available Hot & Ready item.', active:true, soldOut:false, cost:0, image:'' }
+];
+const V160_HOT_READY_SELECTIONS = [
+  { id:'hot-base-fried-rice', name:'Fried Rice', viName:'Cơm chiên', category:'Hot & Ready Base', price:0, description:'Hot & Ready base selection.', active:true, soldOut:false, cost:0, image:'' },
+  { id:'hot-base-chow-mein', name:'Chow Mein', viName:'Mì xào', category:'Hot & Ready Base', price:0, description:'Hot & Ready base selection.', active:true, soldOut:false, cost:0, image:'' },
+  { id:'hot-beef-broccoli', name:'Beef & Broccoli', viName:'Bò xào bông cải xanh', category:'Hot & Ready Item', price:0, description:'Hot & Ready selection.', active:true, soldOut:false, cost:0, image:'' },
+  { id:'hot-grilled-chicken', name:'Grilled Chicken', viName:'Gà nướng', category:'Hot & Ready Item', price:0, description:'Hot & Ready selection.', active:true, soldOut:false, cost:0, image:'' },
+  { id:'hot-sweet-sour-chicken', name:'Sweet & Sour Chicken', viName:'Gà chua ngọt', category:'Hot & Ready Item', price:0, description:'Hot & Ready selection.', active:true, soldOut:false, cost:0, image:'' },
+  { id:'hot-sesame-chicken', name:'Sesame Chicken', viName:'Gà sốt mè', category:'Hot & Ready Item', price:0, description:'Hot & Ready selection.', active:true, soldOut:false, cost:0, image:'' },
+  { id:'hot-sesame-chicken-wings', name:'Sesame Chicken Wings', viName:'Cánh gà sốt mè', category:'Hot & Ready Item', price:0, description:'Hot & Ready selection.', active:true, soldOut:false, cost:0, image:'' },
+  { id:'hot-sweet-sour-pork-peppers', name:'Sweet & Sour Pork with Bell Peppers', viName:'Heo chua ngọt xào ớt chuông', category:'Hot & Ready Item', price:0, description:'Hot & Ready selection.', active:true, soldOut:false, cost:0, image:'' },
+  { id:'hot-fried-chicken', name:'Fried Chicken', viName:'Gà chiên giòn', category:'Hot & Ready Item', price:0, description:'Hot & Ready selection.', active:true, soldOut:false, cost:0, image:'' },
+  { id:'hot-fried-shrimp', name:'Fried Shrimp', viName:'Tôm chiên giòn', category:'Hot & Ready Item', price:0, description:'Hot & Ready selection.', active:true, soldOut:false, cost:0, image:'' },
+  { id:'hot-meatballs-tomato', name:'Meatballs in Tomato Sauce', viName:'Thịt viên sốt cà chua', category:'Hot & Ready Item', price:0, description:'Hot & Ready selection.', active:true, soldOut:false, cost:0, image:'' },
+  { id:'hot-braised-pork-eggs', name:'Braised Pork Belly & Eggs', viName:'Thịt kho trứng', category:'Hot & Ready Item', price:0, description:'Hot & Ready selection.', active:true, soldOut:false, cost:0, image:'' },
+  { id:'hot-spring-rolls', name:'Spring Rolls', viName:'Chả giò', category:'Hot & Ready Item', price:0, description:'Hot & Ready selection.', active:true, soldOut:false, cost:0, image:'' },
+  { id:'hot-braised-beef-pork', name:'Braised Beef / Pork', viName:'Bò / heo kho', category:'Hot & Ready Item', price:0, description:'Hot & Ready selection.', active:true, soldOut:false, cost:0, image:'' }
+];
+const V160_COMBO_IDS = new Set(V160_HOT_READY_COMBOS.map(x=>x.id));
+function v160HotReadyLookup(menu,id,category){
+  const x=menu.find(row=>String(row.id)===String(id)&&row.category===category);
+  return x&&x.active&&!x.soldOut?x:null;
+}
+function v160ComboAvailability(menu){
+  const bases=menu.filter(x=>x.category==='Hot & Ready Base'&&x.active&&!x.soldOut);
+  const hot=menu.filter(x=>x.category==='Hot & Ready Item'&&x.active&&!x.soldOut);
+  return {
+    'combo-rice-noodles-two': bases.length>=1&&hot.length>=1,
+    'combo-single-item': bases.length>=1,
+    'combo-single-hot-item': hot.length>=1
+  };
+}
+function v160PublicHotReady(menu){
+  const meta=new Map(V160_HOT_READY_SELECTIONS.map(x=>[x.id,x]));
+  const mapRow=x=>({id:x.id,name:x.name,viName:meta.get(x.id)?.viName||x.name,type:x.category==='Hot & Ready Base'?'base':'hot-item',available:!!x.active&&!x.soldOut,visible:x.active!==false,comboUpcharge:money(x.price||0)});
+  return {note:'Hot & Ready selections may change daily. Available while quantities last.',bases:menu.filter(x=>x.category==='Hot & Ready Base').map(mapRow),hotItems:menu.filter(x=>x.category==='Hot & Ready Item').map(mapRow)};
+}
+async function ensureV160HotReady(){
+  const current=await db.getMenu(),by=new Map(current.map(x=>[String(x.id),x]));
+  for(const def of V160_HOT_READY_COMBOS){
+    const old=by.get(def.id);const next=old?{...old,...def,active:old.active!==false,soldOut:false}:{...def};
+    if(!old||['name','category','price','description'].some(k=>String(old[k]??'')!==String(next[k]??''))||old.soldOut)await db.upsertMenu(next);
+  }
+  for(const def of V160_HOT_READY_SELECTIONS){
+    const old=by.get(def.id);if(!old){await db.upsertMenu({...def});continue}
+    const next={...old,name:def.name,category:def.category,description:def.description,price:Number(old.price??0),active:old.active!==false,soldOut:!!old.soldOut};
+    if(['name','category','description'].some(k=>String(old[k]??'')!==String(next[k]??'')))await db.upsertMenu(next);
+  }
+}
+
 function normalizeItemModifiers(raw) {
   if (!Array.isArray(raw)) return [];
   return raw.map(v => txt(v, 120)).filter(Boolean).slice(0, 12);
@@ -121,6 +174,30 @@ function menuItemsFrom(raw, menu, allowOverride = false) {
   const out = [];
   for (const r of (Array.isArray(raw) ? raw : [])) {
     const m = menu.find(x => x.id === r.id); if (!m) continue;
+    const comboId=String(m.id||'');
+    if(V160_COMBO_IDS.has(comboId)){
+      const avail=v160ComboAvailability(menu);if(!allowOverride&&!avail[comboId])throw Error(`${m.name} is currently unavailable.`);
+      const sel=(r&&typeof r.selections==='object'&&r.selections)|| (r&&typeof r.comboSelections==='object'&&r.comboSelections)||{};
+      const extraMods=normalizeItemModifiers(r.modifiers).filter(x=>!/^Base:|^Hot Item(?: #\d+)?:/i.test(x));
+      const qty=Math.max(1,Math.min(50,Number(r.qty)||1));
+      if(allowOverride&&!Object.keys(sel).length){out.push({id:m.id,name:txt(r.displayName||r.name||m.name,180)||m.name,price:money(r.priceOverride!==undefined?r.priceOverride:m.price),qty,modifiers:extraMods});continue}
+      let selections={},detailMods=[],upcharge=0;const selectionId=v=>v&&typeof v==='object'?v.id:v;
+      if(comboId==='combo-rice-noodles-two'){
+        const base=v160HotReadyLookup(menu,selectionId(sel.base),'Hot & Ready Base');if(!base)throw Error('Please choose an available rice or noodle option.');
+        const item1=v160HotReadyLookup(menu,selectionId(sel.item1),'Hot & Ready Item');if(!item1)throw Error('Please choose an available Hot Item #1.');
+        const item2=v160HotReadyLookup(menu,selectionId(sel.item2),'Hot & Ready Item');if(!item2)throw Error('Please choose an available Hot Item #2.');
+        selections={base:{id:base.id,name:base.name},item1:{id:item1.id,name:item1.name},item2:{id:item2.id,name:item2.name}};
+        detailMods=[`Base: ${base.name}`,`Hot Item #1: ${item1.name}`,`Hot Item #2: ${item2.name}`];upcharge=Number(base.price||0)+Number(item1.price||0)+Number(item2.price||0);
+      }else if(comboId==='combo-single-item'){
+        const base=v160HotReadyLookup(menu,selectionId(sel.base),'Hot & Ready Base');if(!base)throw Error('Please choose an available rice or noodle option.');
+        selections={base:{id:base.id,name:base.name}};detailMods=[`Base: ${base.name}`];upcharge=Number(base.price||0);
+      }else{
+        const item=v160HotReadyLookup(menu,selectionId(sel.item||sel.item1),'Hot & Ready Item');if(!item)throw Error('Please choose an available Hot & Ready item.');
+        selections={item:{id:item.id,name:item.name}};detailMods=[`Hot Item: ${item.name}`];upcharge=Number(item.price||0);
+      }
+      out.push({id:m.id,name:m.name,price:money(Number(m.price||0)+upcharge),qty,modifiers:[...detailMods,...extraMods],selections});
+      continue;
+    }
     if (!allowOverride && (m.soldOut || !m.active)) throw Error(`${m.name} is currently unavailable.`);
     const requestedName = txt(r.displayName || r.name || m.name, 180);
     const proteinExtra = proteinVariantSurcharge(m, requestedName);
@@ -253,6 +330,7 @@ function inventoryExcelXml(items, settings, exportedAtLabel) {
 }
 
 async function createOrderFromPayload(b, { source = 'website', allowOverride = false, initialStatus = 'new' } = {}) {
+  await ensureV160HotReady();
   const [menu, promotions] = await Promise.all([db.getMenu(), db.getPromotions()]);
   const items = menuItemsFrom(b.items, menu, allowOverride); if (!items.length) throw Error('Add at least one item.');
   const fulfillment = String(b.fulfillment || b.channel || 'pickup').toLowerCase();
@@ -261,8 +339,16 @@ async function createOrderFromPayload(b, { source = 'website', allowOverride = f
   recalcOrder(o, promotions, source === 'website' ? 'website' : 'pos'); return o;
 }
 
-app.get('/api/health', async (req, res, next) => { try { const h = await db.healthCheck(); res.setHeader('Cache-Control','no-store'); res.json({ ok: true, time: new Date().toISOString(), version: '11.40.0', storage: db.storageLabel || 'Supabase PostgreSQL', databaseTime: h.serverTime, adminPinSource: process.env.ADMIN_PIN ? 'environment' : 'default' }); } catch (e) { next(e); } });
-app.get('/api/public/menu', async (req, res, next) => { try { await ensureV116MenuAddons(); await ensureV118ComboItems(); await ensureV1112MenuNames(); await ensureV1113MenuStructure(); await ensureV1116WokRows(); await ensureV1135BeverageRows(); await ensureV119PromotionCampaign(); const [menu, promotions] = await Promise.all([db.getMenu(), db.getPromotions()]); const allowedVietNomNomIds = new Set(["banhmi-special", "banhmi-chicken", "banhmi-pork", "banhmi-beef", "banhmi-pork-sausage", "banhmi-tofu-veg", "combo-rice-noodles-two", "combo-single-item", "summer-chicken", "summer-pork", "summer-beef", "summer-pork-sausage", "summer-shrimp", "summer-shrimp-pork", "summer-tofu-veg", "vermicelli-chicken-pork-spring", "vermicelli-chicken-beef-spring", "vermicelli-chicken-pork-sausage-spring", "vermicelli-tofu-vegetable", "rice-chicken-pork", "rice-chicken-beef", "rice-chicken-pork-chop", "rice-beef-pork-chop", "rice-shrimp-pork-chop", "rice-crispy-chicken-leg", "pho-special", "pho-rare-beef", "pho-well-done-brisket", "pho-beef-balls", "pho-rare-beef-balls", "pho-tofu-vegetable", "pho-chicken", "dessert-three-colour", "dessert-tofu-pudding", "dessert-grass-jelly-boba"]); const pricedMenu = menu.map(x=>({ ...x, basePrice:Number(x.price||0), weeklySpecial:null })); res.setHeader('Cache-Control','no-store'); res.json({ menu: pricedMenu.filter(x => x.active && allowedVietNomNomIds.has(String(x.id))), promotions: [], weeklySpecial: { day:'', label:'', items:[], combos:[] } }); } catch (e) { next(e); } });
+app.get('/api/health', async (req, res, next) => { try { const h = await db.healthCheck(); res.setHeader('Cache-Control','no-store'); res.json({ ok: true, time: new Date().toISOString(), version: '1.6.0', storage: db.storageLabel || 'Supabase PostgreSQL', databaseTime: h.serverTime, adminPinSource: process.env.ADMIN_PIN ? 'environment' : 'default' }); } catch (e) { next(e); } });
+app.get('/api/public/menu', async (req, res, next) => { try {
+  await ensureV116MenuAddons(); await ensureV118ComboItems(); await ensureV1112MenuNames(); await ensureV1113MenuStructure(); await ensureV1116WokRows(); await ensureV1135BeverageRows(); await ensureV119PromotionCampaign(); await ensureV160HotReady();
+  const [menu, promotions] = await Promise.all([db.getMenu(), db.getPromotions()]);
+  const allowedVietNomNomIds = new Set(["banhmi-special", "banhmi-chicken", "banhmi-pork", "banhmi-beef", "banhmi-pork-sausage", "banhmi-tofu-veg", "combo-rice-noodles-two", "combo-single-item", "combo-single-hot-item", "summer-chicken", "summer-pork", "summer-beef", "summer-pork-sausage", "summer-shrimp", "summer-shrimp-pork", "summer-tofu-veg", "vermicelli-chicken-pork-spring", "vermicelli-chicken-beef-spring", "vermicelli-chicken-pork-sausage-spring", "vermicelli-tofu-vegetable", "rice-chicken-pork", "rice-chicken-beef", "rice-chicken-pork-chop", "rice-beef-pork-chop", "rice-shrimp-pork-chop", "rice-crispy-chicken-leg", "pho-special", "pho-rare-beef", "pho-well-done-brisket", "pho-beef-balls", "pho-rare-beef-balls", "pho-tofu-vegetable", "pho-chicken", "dessert-three-colour", "dessert-tofu-pudding", "dessert-grass-jelly-boba"]);
+  const availability=v160ComboAvailability(menu);
+  const pricedMenu = menu.map(x=>({ ...x, soldOut:V160_COMBO_IDS.has(String(x.id))?!availability[String(x.id)]:!!x.soldOut, basePrice:Number(x.price||0), weeklySpecial:null }));
+  res.setHeader('Cache-Control','no-store');
+  res.json({ menu: pricedMenu.filter(x => x.active && allowedVietNomNomIds.has(String(x.id))), hotReady:v160PublicHotReady(menu), promotions: [], weeklySpecial: { day:'', label:'', items:[], combos:[] } });
+} catch (e) { next(e); } });
 app.get('/api/public/status', async (req, res, next) => { try { await ensureV1110BrandName(); res.json(publicStatusFromSettings(await db.getSettings())); } catch (e) { next(e); } });
 
 function customerComingAtV1122(o){
@@ -294,7 +380,7 @@ app.post('/api/public/order-coming', async (req,res,next)=>{try{
   o.updatedAt=stamp;await db.updateOrder(o);
   res.setHeader('Cache-Control','no-store');res.json({ok:true,customerComingAt:stamp});
 }catch(e){next(e)}});
-app.post('/api/admin/login', (req, res) => { res.setHeader('Cache-Control','no-store'); return normalizePin(req.body?.pin) === ADMIN_PIN ? res.json({ ok: true, version: '11.40.0' }) : res.status(401).json({ error: 'Incorrect PIN' }); });
+app.post('/api/admin/login', (req, res) => { res.setHeader('Cache-Control','no-store'); return normalizePin(req.body?.pin) === ADMIN_PIN ? res.json({ ok: true, version: '1.6.0' }) : res.status(401).json({ error: 'Incorrect PIN' }); });
 
 app.post('/api/orders', async (req, res, next) => { try {
   await ensureV1110BrandName();
@@ -484,7 +570,21 @@ ar.get('/revenue-ledger', async (req,res,next)=>{try{await ensureV1140RevenueLed
 ar.post('/revenue-ledger', async (req,res,next)=>{try{const b=req.body||{};if(!/^\d{4}-\d{2}-\d{2}$/.test(String(b.date||'')))return res.status(400).json({error:'Enter a valid business date.'});const {id:ignored,...payload}=b;const row=await db.upsertRevenueLedger({...payload,source:txt(b.source,120)||'Manager entry'});res.status(201).json({ok:true,row})}catch(e){next(e)}});
 ar.patch('/revenue-ledger/:id', async (req,res,next)=>{try{const b=req.body||{};const row=await db.upsertRevenueLedger({...b,id:req.params.id,source:txt(b.source,120)||'Manager entry'});res.json({ok:true,row})}catch(e){next(e)}});
 ar.delete('/revenue-ledger/:id', async (req,res,next)=>{try{await db.deleteRevenueLedger(req.params.id);res.json({ok:true})}catch(e){next(e)}});
-ar.get('/menu', async (req, res, next) => { try { await ensureV116MenuAddons(); await ensureV118ComboItems(); await ensureV1112MenuNames(); await ensureV1113MenuStructure(); await ensureV1116WokRows(); await ensureV1135BeverageRows(); res.json({ menu: await db.getMenu() }); } catch (e) { next(e); } });
+ar.get('/menu', async (req, res, next) => { try { await ensureV116MenuAddons(); await ensureV118ComboItems(); await ensureV160HotReady(); await ensureV1112MenuNames(); await ensureV1113MenuStructure(); await ensureV1116WokRows(); await ensureV1135BeverageRows(); res.json({ menu: await db.getMenu() }); } catch (e) { next(e); } });
+// V1.6 — batch Hot & Ready availability control. Combo availability is derived from the underlying items.
+ar.patch('/hot-ready/availability', async (req,res,next)=>{try{
+  await ensureV160HotReady();
+  const b=req.body||{},allowed=new Set(V160_HOT_READY_SELECTIONS.map(x=>x.id)),menu=await db.getMenu();
+  const targets=menu.filter(x=>allowed.has(String(x.id)));
+  let updates=[];
+  if(typeof b.soldOut==='boolean')updates=targets.map(x=>({id:x.id,soldOut:b.soldOut}));
+  else if(Array.isArray(b.updates))updates=b.updates.filter(x=>allowed.has(String(x?.id))&&typeof x?.soldOut==='boolean').map(x=>({id:String(x.id),soldOut:!!x.soldOut}));
+  if(!updates.length)return res.status(400).json({error:'No Hot & Ready availability updates supplied.'});
+  const byId=new Map(targets.map(x=>[String(x.id),x]));
+  for(const u of updates){const row=byId.get(u.id);if(row)await db.upsertMenu({...row,soldOut:u.soldOut});}
+  const nextMenu=await db.getMenu();
+  res.json({ok:true,hotReady:v160PublicHotReady(nextMenu),combos:v160ComboAvailability(nextMenu)});
+}catch(e){next(e)}});
 ar.get('/promotions', async (req, res, next) => { try { await ensureV119PromotionCampaign(); res.json({ promotions: await db.getPromotions() }); } catch (e) { next(e); } });
 
 const V1111_OPERATING_SUPPLIES = [

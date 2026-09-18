@@ -4,7 +4,8 @@ const crypto = require('crypto');
 
 const ROOT = __dirname;
 const SEED_DIR = path.join(ROOT, 'data');
-const STORE_DIR = path.join(ROOT, '.local-data');
+const IS_VERCEL = !!process.env.VERCEL;
+const STORE_DIR = IS_VERCEL ? path.join('/tmp', 'viet-nom-nom-data') : path.join(ROOT, '.local-data');
 const FILES = {
   menu: 'menu.json',
   promotions: 'promotions.json',
@@ -242,7 +243,7 @@ async function deleteRevenueLedger(id) {
 const pool = { end: async () => {}, connect: async () => ({ query: async () => ({ rows: [] }), release() {} }) };
 
 module.exports = {
-  storageLabel: 'Local JSON (development)', pool, healthCheck, ensureSchemaExtensions, bootstrapFromJson,
+  storageLabel: IS_VERCEL ? 'Temporary JSON (/tmp) – connect PostgreSQL for persistent production data' : 'Local JSON (development)', pool, healthCheck, ensureSchemaExtensions, bootstrapFromJson,
   getMenu, upsertMenu, deleteMenu, getPromotions, upsertPromotion, deletePromotion,
   getInventory, upsertInventory, deleteInventory, getEmployees, upsertEmployee, deleteEmployee,
   getShifts, upsertShift, deleteShift, getPayroll, upsertPayroll, deletePayroll,
