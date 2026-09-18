@@ -1,4 +1,4 @@
-# Viet Nom Nom Business Suite V1.6
+# Viet Nom Nom Business Suite V1.7
 
 Restaurant website + ordering + Vietnamese Staff Admin for **Viet Nom Nom**.
 
@@ -8,7 +8,7 @@ Restaurant website + ordering + Vietnamese Staff Admin for **Viet Nom Nom**.
 - Hours: Mon–Sat 8:00 AM–7:00 PM; Sun 8:00 AM–6:00 PM
 - Public menu: Vietnamese cuisine only
 
-## V1.6 — Hot & Ready Combo system
+## V1.7 — Hot & Ready Combo system
 - **C1 — $12.99:** choose 1 rice/noodle base + Hot Item #1 + Hot Item #2. The same hot item may be selected twice.
 - **C2 — $5.99:** choose 1 base (Fried Rice or Chow Mein).
 - **C3 — $7.99:** choose 1 Hot & Ready item.
@@ -23,7 +23,7 @@ Restaurant website + ordering + Vietnamese Staff Admin for **Viet Nom Nom**.
 - Selection rows are operational data and are hidden from the ordinary POS/menu-item lists.
 - Selection prices are already treated as future combo upcharges; all are $0 by default.
 
-## Other V1.6 features
+## Other V1.7 features
 - Staff Admin is localized into Vietnamese.
 - Uber Eats and Skip links appear beside Order Direct.
 - Website-order item names, statuses, fulfillment, payment and kitchen modifiers display in Vietnamese for staff.
@@ -50,3 +50,6 @@ Default Admin PIN: `2468`
 If `POSTGRES_URL`, `POSTGRES_PRISMA_URL`, or `POSTGRES_URL_NON_POOLING` is present, the app uses PostgreSQL (`db-postgres.js`).
 
 Without PostgreSQL, Vercel falls back to `/tmp` so the app can load, but `/tmp` is temporary. Connect Supabase/PostgreSQL before relying on production website orders or persistent staff data.
+
+
+V1.7: hardened Vercel/serverless local fallback detection so read-only /var/task never receives .local-data writes.

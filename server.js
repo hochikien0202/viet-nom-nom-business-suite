@@ -339,7 +339,7 @@ async function createOrderFromPayload(b, { source = 'website', allowOverride = f
   recalcOrder(o, promotions, source === 'website' ? 'website' : 'pos'); return o;
 }
 
-app.get('/api/health', async (req, res, next) => { try { const h = await db.healthCheck(); res.setHeader('Cache-Control','no-store'); res.json({ ok: true, time: new Date().toISOString(), version: '1.6.0', storage: db.storageLabel || 'Supabase PostgreSQL', databaseTime: h.serverTime, adminPinSource: process.env.ADMIN_PIN ? 'environment' : 'default' }); } catch (e) { next(e); } });
+app.get('/api/health', async (req, res, next) => { try { const h = await db.healthCheck(); res.setHeader('Cache-Control','no-store'); res.json({ ok: true, time: new Date().toISOString(), version: '1.7.0', storage: db.storageLabel || 'Supabase PostgreSQL', databaseTime: h.serverTime, adminPinSource: process.env.ADMIN_PIN ? 'environment' : 'default' }); } catch (e) { next(e); } });
 app.get('/api/public/menu', async (req, res, next) => { try {
   await ensureV116MenuAddons(); await ensureV118ComboItems(); await ensureV1112MenuNames(); await ensureV1113MenuStructure(); await ensureV1116WokRows(); await ensureV1135BeverageRows(); await ensureV119PromotionCampaign(); await ensureV160HotReady();
   const [menu, promotions] = await Promise.all([db.getMenu(), db.getPromotions()]);
@@ -380,7 +380,7 @@ app.post('/api/public/order-coming', async (req,res,next)=>{try{
   o.updatedAt=stamp;await db.updateOrder(o);
   res.setHeader('Cache-Control','no-store');res.json({ok:true,customerComingAt:stamp});
 }catch(e){next(e)}});
-app.post('/api/admin/login', (req, res) => { res.setHeader('Cache-Control','no-store'); return normalizePin(req.body?.pin) === ADMIN_PIN ? res.json({ ok: true, version: '1.6.0' }) : res.status(401).json({ error: 'Incorrect PIN' }); });
+app.post('/api/admin/login', (req, res) => { res.setHeader('Cache-Control','no-store'); return normalizePin(req.body?.pin) === ADMIN_PIN ? res.json({ ok: true, version: '1.7.0' }) : res.status(401).json({ error: 'Incorrect PIN' }); });
 
 app.post('/api/orders', async (req, res, next) => { try {
   await ensureV1110BrandName();
