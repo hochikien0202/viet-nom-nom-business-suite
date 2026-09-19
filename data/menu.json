@@ -67,10 +67,10 @@
   },
   {
     "id": "combo-rice-noodles-two",
-    "name": "C1. Rice/Noodles + 2 Hot Items",
+    "name": "C1. Rice/Noodles + 1 Hot Item",
     "category": "Combo",
-    "price": 12.99,
-    "description": "Choose 1 rice or noodle base and any 2 Hot & Ready items.",
+    "price": 11.99,
+    "description": "Choose 1 rice or noodle base and 1 Hot & Ready item.",
     "active": true,
     "soldOut": false,
     "cost": 0,

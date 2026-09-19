@@ -114,7 +114,7 @@ function proteinVariantSurcharge(menuItem, requestedName) {
   return 0;
 }
 const V160_HOT_READY_COMBOS = [
-  { id:'combo-rice-noodles-two', name:'C1. Rice/Noodles + 2 Hot Items', category:'Combo', price:12.99, description:'Choose 1 rice or noodle base and any 2 Hot & Ready items.', active:true, soldOut:false, cost:0, image:'' },
+  { id:'combo-rice-noodles-two', name:'C1. Rice/Noodles + 1 Hot Item', category:'Combo', price:11.99, description:'Choose 1 rice or noodle base and 1 Hot & Ready item.', active:true, soldOut:false, cost:0, image:'' },
   { id:'combo-single-item', name:'C2. Single Rice or Noodles', category:'Combo', price:5.99, description:'Choose one serving of fried rice or chow mein.', active:true, soldOut:false, cost:0, image:'' },
   { id:'combo-single-hot-item', name:'C3. Single Hot Item', category:'Combo', price:7.99, description:'Choose one available Hot & Ready item.', active:true, soldOut:false, cost:0, image:'' }
 ];
@@ -185,9 +185,8 @@ function menuItemsFrom(raw, menu, allowOverride = false) {
       if(comboId==='combo-rice-noodles-two'){
         const base=v160HotReadyLookup(menu,selectionId(sel.base),'Hot & Ready Base');if(!base)throw Error('Please choose an available rice or noodle option.');
         const item1=v160HotReadyLookup(menu,selectionId(sel.item1),'Hot & Ready Item');if(!item1)throw Error('Please choose an available Hot Item #1.');
-        const item2=v160HotReadyLookup(menu,selectionId(sel.item2),'Hot & Ready Item');if(!item2)throw Error('Please choose an available Hot Item #2.');
-        selections={base:{id:base.id,name:base.name},item1:{id:item1.id,name:item1.name},item2:{id:item2.id,name:item2.name}};
-        detailMods=[`Base: ${base.name}`,`Hot Item #1: ${item1.name}`,`Hot Item #2: ${item2.name}`];upcharge=Number(base.price||0)+Number(item1.price||0)+Number(item2.price||0);
+        selections={base:{id:base.id,name:base.name},item1:{id:item1.id,name:item1.name}};
+        detailMods=[`Base: ${base.name}`,`Hot Item: ${item1.name}`];upcharge=Number(base.price||0)+Number(item1.price||0);
       }else if(comboId==='combo-single-item'){
         const base=v160HotReadyLookup(menu,selectionId(sel.base),'Hot & Ready Base');if(!base)throw Error('Please choose an available rice or noodle option.');
         selections={base:{id:base.id,name:base.name}};detailMods=[`Base: ${base.name}`];upcharge=Number(base.price||0);
@@ -430,8 +429,8 @@ async function ensureV1116WokRows(){
 }
 
 const V118_COMBO_ITEMS = [
-  { id:'combo-rice-noodles-two', name:'C1. Rice or Noodles with Any 2 Items', category:'Combo', price:11.99, description:'Choose rice or noodles with any two available hot-table items.', active:true, soldOut:false, cost:0, image:'' },
-  { id:'combo-single-item', name:'C2. Single Item', category:'Combo', price:7.99, description:'One single hot-table item.', active:true, soldOut:false, cost:0, image:'' }
+  { id:'combo-rice-noodles-two', name:'C1. Rice/Noodles + 1 Hot Item', category:'Combo', price:11.99, description:'Choose 1 rice or noodle base and 1 Hot & Ready item.', active:true, soldOut:false, cost:0, image:'' },
+  { id:'combo-single-item', name:'C2. Single Rice or Noodles', category:'Combo', price:5.99, description:'Choose one serving of fried rice or chow mein.', active:true, soldOut:false, cost:0, image:'' }
 ];
 async function ensureV118ComboItems() {
   // Only seed missing combo rows. Never overwrite an existing row here: doing so
