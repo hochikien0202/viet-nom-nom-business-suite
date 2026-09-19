@@ -8,7 +8,7 @@ const readyAudio=$('#customerReadyAudio');
 let activeOrder=null,pollTimer=null,alertUnlocked=false,lastRenderedStatus=null;
 
 // V11.28 — READY alert uses sound only. Vibration/notification haptics were removed for reliability.
-function getDraft(){try{return JSON.parse(localStorage.getItem(DRAFT_KEY)||'null')}catch{return null}}
+function getDraft(){try{const d=JSON.parse(localStorage.getItem(DRAFT_KEY)||'null');if(d){d.fulfillment='pickup';d.address='';d.distanceKm=0;d.payment='counter';}return d}catch{return null}}
 function trackingKey(orderNo){return `vietNomNomTrackingV1:${orderNo}`}
 function saveTracking(orderNo,phone){
   const rec={orderNo,phone,savedAt:new Date().toISOString()};
@@ -36,7 +36,7 @@ function paymentInstructions(d,t){
   return `<div class="payment-method-panel"><span>Payment method</span><b>${esc(paymentLabel(d.payment))}</b><small>${d.fulfillment==='delivery'?'Payment will follow the selected delivery method.':'Pay when you arrive at the restaurant.'}</small></div>`;
 }
 function requestedTimeLabel(v){if(!v||v==='ASAP')return 'ASAP';const [d,t]=String(v).split('T');try{return new Intl.DateTimeFormat('en-CA',{year:'numeric',month:'short',day:'numeric'}).format(new Date(`${d}T12:00:00`))+` at ${t}`}catch{return `${d} at ${t}`}}
-function fulfillmentLabel(v){return ({pickup:'Pickup',delivery:'Delivery','dine-in':'Dine-in','walk-in':'Walk-in',phone:'Phone'})[v]||String(v||'')}
+function fulfillmentLabel(v){return ({pickup:'Pickup',delivery:'Delivery','walk-in':'Walk-in',phone:'Phone'})[v]||String(v||'')}
 function packingLabelV1135(v){return ({None:'No utensils or napkins',Utensils:'Utensils only',Napkins:'Napkins only',Both:'Utensils & napkins'})[String(v||'')]||String(v||'')}
 function parseOrderNotesV1135(data){
   let packing=packingLabelV1135(data?.packingPreference||''),note=String(data?.notes||'').trim();
@@ -102,13 +102,13 @@ function statusHeadline(o){
   if(o.status==='new')return o.requestedTime!=='ASAP'?`Your pre-order is scheduled for ${requestedTimeLabel(o.requestedTime)}.`:'Your order has reached Viet Nom Nom and is waiting for staff acceptance.';
   if(o.status==='accepted')return 'Your order has been accepted. The kitchen will get it moving shortly.';
   if(o.status==='preparing')return 'The kitchen is preparing your food now.';
-  if(o.status==='ready')return o.fulfillment==='delivery'?'Your food is ready and waiting to head your way.':o.fulfillment==='dine-in'?'Your meal is ready to enjoy!':'Your food is ready for pickup — hot, fresh, and ready to enjoy!';
+  if(o.status==='ready')return o.fulfillment==='delivery'?'Your food is ready and waiting to head your way.':'Your food is ready for pickup — hot, fresh, and ready to enjoy!';
   if(o.status==='out-for-delivery')return 'Your order is on the way. Please keep an eye out for the driver.';
   if(o.status==='completed')return 'Order complete. Thank you for supporting Viet Nom Nom!';
   if(o.status==='cancelled')return 'This order was cancelled. Please call the restaurant if you have questions.';
   return 'We’re keeping this page updated automatically.';
 }
-function timelineStages(o){const stages=[['new','Received'],['accepted','Accepted'],['preparing','Preparing'],['ready',o.fulfillment==='delivery'?'Ready for delivery':o.fulfillment==='dine-in'?'Ready to serve':'Ready for pickup']];if(o.fulfillment==='delivery')stages.push(['out-for-delivery','On the way']);stages.push(['completed','Completed']);return stages}
+function timelineStages(o){const stages=[['new','Received'],['accepted','Accepted'],['preparing','Preparing'],['ready',o.fulfillment==='delivery'?'Ready for delivery':'Ready for pickup']];if(o.fulfillment==='delivery')stages.push(['out-for-delivery','On the way']);stages.push(['completed','Completed']);return stages}
 function timelineHtml(o){
   const stages=timelineStages(o),order=stages.map(x=>x[0]),idx=o.status==='cancelled'?-1:order.indexOf(o.status);return stages.map((s,i)=>`<div class="status-step ${idx>=i?'done':''} ${idx===i?'current':''}"><div class="status-dot">${idx>i?'✓':i+1}</div><div><b>${esc(s[1])}</b><small>${idx===i?'Current status':idx>i?'Completed':'Waiting'}</small></div></div>`).join('')
 }
@@ -122,9 +122,9 @@ function renderReady(o,previousStatus){
     return;
   }
   box.hidden=false;
-  const delivery=o.fulfillment==='delivery',dine=o.fulfillment==='dine-in';
-  $('#readyTitle').textContent=delivery?'Your food is ready!':dine?'Your meal is ready!':'Your order is ready for pickup!';
-  $('#readyMessage').textContent=delivery?'Fresh from the kitchen and waiting to head your way.':dine?'Fresh from the kitchen — enjoy your meal!':'Come grab it while it’s piping hot, fresh, and delicious!';
+  const delivery=o.fulfillment==='delivery';
+  $('#readyTitle').textContent=delivery?'Your food is ready!':'Your order is ready for pickup!';
+  $('#readyMessage').textContent=delivery?'Fresh from the kitchen and waiting to head your way.':'Come grab it while it’s piping hot, fresh, and delicious!';
   if(previousStatus!=='ready')startReadyAudio(o.orderNo);
 }
 function renderLive(o){

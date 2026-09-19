@@ -1,4 +1,13 @@
-# Viet Nom Nom Business Suite V1.8
+# Viet Nom Nom Business Suite V2.0
+
+## V2.0 — Pickup-only + Vietnamese Staff polish
+
+- Direct website ordering is **pickup only**. Customers are no longer asked to choose dine-in vs pickup.
+- Old/stale customer checkout drafts are normalized to pickup automatically.
+- New website orders are forced to `pickup` on the backend as a safety check.
+- Dine-in was removed from current Staff POS and order-editor choices.
+- Staff-facing packing preferences are fully Vietnamese, including **khăn giấy** and **muỗng / đũa / nĩa**.
+- Staff localization no longer rescans the entire page on every keystroke; dynamic sections are localized only when needed for smoother operation.
 
 Restaurant website + ordering + Vietnamese Staff Admin for **Viet Nom Nom**.
 
@@ -8,9 +17,9 @@ Restaurant website + ordering + Vietnamese Staff Admin for **Viet Nom Nom**.
 - Hours: Mon–Sat 8:00 AM–7:00 PM; Sun 8:00 AM–6:00 PM
 - Public menu: Vietnamese cuisine only
 
-## V1.8 — Hot & Ready Combo system
+## V2.0 — Hot & Ready Combo system
 - **C1 — $11.99:** choose 1 rice/noodle base + 1 Hot & Ready item.
-- **C2 — $5.99:** choose 1 base (Fried Rice or Chow Mein).
+- **C2 — $5.99:** choose 1 base (Fried Rice, Chow Mein, or Ho-Fun).
 - **C3 — $7.99:** choose 1 Hot & Ready item.
 - Base and Hot Item availability are stored separately from the combos.
 - C1/C2/C3 availability is calculated automatically from the currently available selections.
@@ -23,7 +32,7 @@ Restaurant website + ordering + Vietnamese Staff Admin for **Viet Nom Nom**.
 - Selection rows are operational data and are hidden from the ordinary POS/menu-item lists.
 - Selection prices are already treated as future combo upcharges; all are $0 by default.
 
-## Other V1.8 features
+## Other V2.0 features
 - Staff Admin is localized into Vietnamese.
 - Uber Eats and Skip links appear beside Order Direct.
 - Website-order item names, statuses, fulfillment, payment and kitchen modifiers display in Vietnamese for staff.
@@ -52,4 +61,4 @@ If `POSTGRES_URL`, `POSTGRES_PRISMA_URL`, or `POSTGRES_URL_NON_POOLING` is prese
 Without PostgreSQL, Vercel falls back to `/tmp` so the app can load, but `/tmp` is temporary. Connect Supabase/PostgreSQL before relying on production website orders or persistent staff data.
 
 
-V1.8: hardened Vercel/serverless local fallback detection so read-only /var/task never receives .local-data writes.
+V2.0: hardened Vercel/serverless local fallback detection so read-only /var/task never receives .local-data writes.

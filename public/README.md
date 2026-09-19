@@ -1,3 +1,1 @@
-# Viet Nom Nom public website
-
-Customer website for Viet Nom Nom, 6645 Tecumseh Rd E, Windsor, ON N8T 1E7. The published menu is Vietnamese only.
+Viet Nom Nom V2.0 public site: pickup-only direct ordering; delivery remains available through external delivery partners. Staff Admin is Vietnamese-first.

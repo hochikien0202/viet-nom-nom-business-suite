@@ -1,8 +1,8 @@
 {
   "name": "viet-nom-nom-business-suite",
-  "version": "1.8.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "Viet Nom Nom Vietnamese-only restaurant website with Hot & Ready C1/C2/C3 configurator, Vietnamese Staff Admin, local JSON development storage and optional PostgreSQL/Supabase production storage.",
+  "description": "Viet Nom Nom Vietnamese-only restaurant website with pickup-only direct ordering, Hot & Ready C1/C2/C3 configurator, fully Vietnamese Staff Admin, local JSON development storage and optional PostgreSQL/Supabase production storage.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
